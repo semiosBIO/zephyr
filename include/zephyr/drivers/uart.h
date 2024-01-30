@@ -362,6 +362,7 @@ __subsystem struct uart_driver_api {
 	/** Console I/O function */
 	int (*poll_in)(const struct device *dev, unsigned char *p_char);
 	void (*poll_out)(const struct device *dev, unsigned char out_char);
+	void (*send_break)(const struct device *dev, const uint32_t break_ms);
 
 #ifdef CONFIG_UART_WIDE_DATA
 	int (*poll_in_u16)(const struct device *dev, uint16_t *p_u16);
@@ -578,6 +579,22 @@ static inline void z_impl_uart_poll_out(const struct device *dev,
 		(const struct uart_driver_api *)dev->api;
 
 	api->poll_out(dev, out_char);
+}
+
+/**
+ * @brief Send a UART Break for the specified duration
+ *
+ * @param dev UART device instance.
+ * @param break_ms the duration of the break in milliseconds
+ */
+__syscall void uart_send_break(const struct device *dev, const uint32_t break_ms);
+
+static inline void z_impl_uart_send_break(const struct device *dev, const uint32_t break_ms)
+{
+	const struct uart_driver_api *api =
+		(const struct uart_driver_api *)dev->api;
+
+	api->send_break(dev, break_ms);
 }
 
 /**
