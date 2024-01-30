@@ -103,6 +103,32 @@ static int pl011_set_baudrate(const struct device *dev,
 	return 0;
 }
 
+static int pl011_configure(const struct device *dev, const struct uart_config *cfg)
+{
+	const struct pl011_config *config = dev->config;
+	/* Set baud rate */
+	int ret = pl011_set_baudrate(dev, config->sys_clk_freq, cfg->baudrate);
+
+	if (ret != 0) {
+		return ret;
+	}
+
+	get_uart(dev)->lcr_h &= ~(PL011_LCRH_EPS | PL011_LCRH_PEN);
+	if (cfg->parity == UART_CFG_PARITY_EVEN) {
+		get_uart(dev)->lcr_h |= PL011_LCRH_EPS | PL011_LCRH_PEN;
+	} else if (cfg->parity == UART_CFG_PARITY_ODD) {
+		get_uart(dev)->lcr_h |= PL011_LCRH_PEN;
+	}
+
+	get_uart(dev)->lcr_h &= ~PL011_BIT_MASK(PL011_LCRH_WLEN_WIDTH, PL011_LCRH_WLEN_SHIFT);
+	if (cfg->data_bits == UART_CFG_DATA_BITS_7) {
+		get_uart(dev)->lcr_h |= PL011_LCRH_WLEN_SIZE(7) << PL011_LCRH_WLEN_SHIFT;
+	} else {
+		get_uart(dev)->lcr_h |= PL011_LCRH_WLEN_SIZE(8) << PL011_LCRH_WLEN_SHIFT;
+	}
+	return 0;
+}
+
 static bool pl011_is_readable(const struct device *dev)
 {
 	struct pl011_data *data = dev->data;
@@ -137,6 +163,13 @@ static void pl011_poll_out(const struct device *dev,
 
 	/* Send a character */
 	get_uart(dev)->dr = (uint32_t)c;
+}
+
+static void pl011_break(const struct device *dev, const uint32_t break_ms)
+{
+	get_uart(dev)->lcr_h |= PL011_LCRH_BRK;
+	k_msleep(break_ms);
+	get_uart(dev)->lcr_h &= ~PL011_LCRH_BRK;
 }
 
 #ifdef CONFIG_UART_INTERRUPT_DRIVEN
@@ -268,6 +301,8 @@ static void pl011_irq_callback_set(const struct device *dev,
 static const struct uart_driver_api pl011_driver_api = {
 	.poll_in = pl011_poll_in,
 	.poll_out = pl011_poll_out,
+	.configure = pl011_configure,
+	.send_break = pl011_break,
 #ifdef CONFIG_UART_INTERRUPT_DRIVEN
 	.fifo_fill = pl011_fifo_fill,
 	.fifo_read = pl011_fifo_read,

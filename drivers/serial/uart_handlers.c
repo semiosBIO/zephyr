@@ -50,6 +50,13 @@ static inline void z_vrfy_uart_poll_out(const struct device *dev,
 }
 #include <syscalls/uart_poll_out_mrsh.c>
 
+static inline void z_vrfy_uart_send_break(const struct device *dev, const uint32_t break_ms);
+{
+	K_OOPS(K_SYSCALL_DRIVER_UART(dev, send_break));
+	z_impl_uart_send_break((const struct device *)dev);
+}
+#include <syscalls/uart_send_break_mrsh.c>
+
 static inline void z_vrfy_uart_poll_out_u16(const struct device *dev,
 					    uint16_t out_u16)
 {
