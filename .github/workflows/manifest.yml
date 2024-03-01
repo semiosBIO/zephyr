@@ -24,12 +24,11 @@ jobs:
           git config --global user.email "you@example.com"
           git config --global user.name "Your Name"
           west init -l . || true
-          echo ${{ secrets.TOKEN }}
 
       - name: Manifest
         uses: zephyrproject-rtos/action-manifest@v1.2.2
         with:
-          github-token: ${{ secrets.TOKEN }}
+          github-token: ${{ secrets.TEST_TOKEN }}
           manifest-path: 'west.yml'
           checkout-path: 'zephyrproject/zephyr'
           use-tree-checkout: 'true'
