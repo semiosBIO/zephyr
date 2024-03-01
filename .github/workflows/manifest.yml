@@ -25,14 +25,14 @@ jobs:
           git config --global user.name "Your Name"
           west init -l . || true
 
-      - name: Manifest
+      - name: Manifest123213213
         uses: zephyrproject-rtos/action-manifest@v1.2.2
         with:
           github-token:  'test123'
           manifest-path: 'west.y11ml'
-          checkout-path: 'zephyrproject/zephyr'
-          use-tree-checkout: 'true'
-          label-prefix: 'manifest-'
+          checkout-path: '323321/zephyr'
+          use-tree-checkout: 'tru31231e'
+          label-prefix: 'manifes132t-'
           verbosity-level: '1'
-          labels: 'manifest'
+          labels: 'manifes321321t'
           dnm-labels: 'DNM'
