@@ -27,10 +27,9 @@ jobs:
 
       - name: Manifest
         uses: zephyrproject-rtos/action-manifest@v1.2.2
-        env:
-          GITHUB_TOKEN: ${{ secrets.TEST_TOKEN }}
         with:
-          manifest-path: 'west.yml'
+          github-token:  'test123'
+          manifest-path: 'west.y11ml'
           checkout-path: 'zephyrproject/zephyr'
           use-tree-checkout: 'true'
           label-prefix: 'manifest-'
