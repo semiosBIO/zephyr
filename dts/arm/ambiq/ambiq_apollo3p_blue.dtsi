@@ -59,6 +59,14 @@
 			#pwrcfg-cells = <2>;
 		};
 
+		rtc: rtc@40004200 {
+			compatible = "ambiq,rtc";
+			reg = <0x40004200 0x200>;
+			interrupts = <2 0>;
+			alarms-count = <1>;
+			status = "disabled";
+		};
+
 		stimer0: stimer@40008800 {
 			compatible = "ambiq,stimer";
 			reg = <0x40008800 0x80>;

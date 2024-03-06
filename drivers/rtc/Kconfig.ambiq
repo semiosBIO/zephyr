@@ -1,0 +1,9 @@
+# Copyright 2024 Semios Inc
+# SPDX-License-Identifier: Apache-2.0
+
+config RTC_AMBIQ
+	bool "Ambiq RTC driver"
+	default y if !COUNTER
+	depends on DT_HAS_AMBIQ_RTC_ENABLED && !SOC_SERIES_APOLLO4X
+	help
+	  Build RTC driver for Ambiq SoCs, excluding Apollo4 series.

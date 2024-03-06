@@ -1,0 +1,12 @@
+# Copyright (c) 2024 Semios Inc
+# SPDX-License-Identifier: Apache-2.0
+
+description: Ambiq RTC
+
+compatible: "ambiq,rtc"
+
+include: rtc-device.yaml
+
+properties:
+  reg:
+    required: true

@@ -1,0 +1,21 @@
+/ {
+    aliases {
+		rtc = &rtc;
+    };
+};
+
+&iom0 {
+	status = "disabled";
+};
+
+&iom1 {
+	status = "disabled";
+};
+
+&iom4 {
+	status = "disabled";
+};
+
+&rtc {
+	status = "okay";
+};
