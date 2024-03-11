@@ -111,6 +111,14 @@ enum lorawan_message_type {
 };
 
 /**
+ * @brief LoRaWAN Rx window timeout types.
+ */
+enum lorawan_timeout_type {
+	LORAWAN_RX_TIMEOUT_MIN_SYMB = 0,
+	LORAWAN_RX_TIMEOUT_MAX_WINDOW,
+};
+
+/**
  * @brief LoRaWAN join parameters for over-the-Air activation (OTAA)
  *
  * Note that all of the fields use LoRaWAN 1.1 terminology.
@@ -377,6 +385,20 @@ int lorawan_set_region(enum lorawan_region region);
  * @return 0 if successful, negative errno otherwise
  */
 int lorawan_set_channel_mask(enum lorawan_channel_mask mask, bool set_default);
+
+/**
+ * @brief Configure lorawan Rx timeout windows
+ *
+ * Configure one of the receive window timeouts used by the hardware before an
+ * RxTimeout is generated. The particular units of the given timeout depends on
+ * the particular window that is being configured. In general, a value of 0 will
+ * be equivalent to no timeout.
+ *
+ * @param type Rx window to configure
+ * @param timeout Timeout value to use
+ * @return 0 if successful, negative errno otherwise
+ */
+int lorawan_set_rx_timeout(enum lorawan_timeout_type type, int timeout);
 
 #ifdef CONFIG_LORAWAN_APP_CLOCK_SYNC
 

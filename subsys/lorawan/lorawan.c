@@ -543,6 +543,26 @@ int lorawan_set_channel_mask(enum lorawan_channel_mask mask, bool set_default)
 	return 0;
 }
 
+int lorawan_set_rx_timeout(enum lorawan_timeout_type type, int timeout)
+{
+	MibRequestConfirm_t mib_req;
+
+	switch (type) {
+	case LORAWAN_RX_TIMEOUT_MIN_SYMB:
+		mib_req.Type = MIB_MIN_RX_SYMBOLS;
+		mib_req.Param.MinRxSymbols = timeout;
+		break;
+	case LORAWAN_RX_TIMEOUT_MAX_WINDOW:
+		mib_req.Type = MIB_MAX_RX_WINDOW_DURATION;
+		mib_req.Param.MaxRxWindow = timeout;
+		break;
+	default:
+		return -EINVAL;
+	}
+
+	return LoRaMacMibSetRequestConfirm(&mib_req);
+}
+
 void lorawan_get_payload_sizes(uint8_t *max_next_payload_size,
 			       uint8_t *max_payload_size)
 {
