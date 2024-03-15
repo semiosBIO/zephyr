@@ -176,4 +176,9 @@
 			ambiq,iom-nce-module = <0>;
 		};
 	};
+	adc_default: adc_default {
+		group1 {
+			pinmux = <ADCSE3_P31>;
+		};
+	};
 };

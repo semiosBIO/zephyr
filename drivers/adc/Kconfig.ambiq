@@ -1,0 +1,14 @@
+# ADC configuration options
+
+# Copyright (c) 2024 Semios Inc
+# SPDX-License-Identifier: Apache-2.0
+
+config ADC_AMBIQ
+	bool "Ambiq ADC driver"
+	default y
+	depends on DT_HAS_AMBIQ_ADC_ENABLED
+	select AMBIQ_HAL
+	select AMBIQ_HAL_USE_ADC
+	select ADC_CONFIGURABLE_INPUTS
+	help
+	  Enable support for Ambiq ADC driver for Apollo3 MCU series.

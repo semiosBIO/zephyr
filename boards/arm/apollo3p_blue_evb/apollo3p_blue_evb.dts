@@ -74,6 +74,11 @@
 	status = "okay";
 };
 
+&adc {
+	pinctrl-0 = <&adc_default>;
+	pinctrl-names = "default";
+};
+
 &counter0 {
 	status = "okay";
 };

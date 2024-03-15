@@ -1,0 +1,49 @@
+# Copyright (c) 2024 Semios Inc
+# SPDX-License-Identifier: Apache-2.0
+
+description: Ambiq ADC node
+
+compatible: "ambiq,adc"
+
+include: [adc-controller.yaml, pinctrl-device.yaml, ambiq-pwrcfg.yaml]
+
+properties:
+  pinctrl-0:
+    required: true
+
+  reg:
+    required: true
+
+  interrupts:
+    required: true
+
+  "#io-channel-cells":
+    const: 1
+
+  ambiq,pwrcfg:
+    required: true
+
+  ambiq,adc-reference:
+    type: int
+    default: 0
+    enum:
+      - 0 # Internal reference
+      - 1 # External reference 0
+      - 2 # External reference 1
+    description: |
+      Reference sources for the ADC. A single internal and two external
+      references are available.
+
+  ambiq,vref-mv:
+    type: int
+    default: 2200
+    enum:
+      - 1500
+      - 2200
+    description: |
+      ADC reference voltage. Only a fixed set of refernce voltages are
+      supported by the ApolloX MCUs for both internal and external ADC
+      reference sources.
+
+io-channel-cells:
+  - input
