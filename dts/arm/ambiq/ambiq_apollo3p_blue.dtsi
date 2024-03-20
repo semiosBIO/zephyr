@@ -102,8 +102,8 @@
 			ambiq,pwrcfg = <&pwrcfg 0x8 0x100>;
 		};
 
-		iom0: iom@50040000 {
-			reg = <0x50040000 0x1000>;
+		iom0: iom@50004000 {
+			reg = <0x50004000 0x1000>;
 			#address-cells = <1>;
 			#size-cells = <0>;
 			interrupts = <6 0>;
