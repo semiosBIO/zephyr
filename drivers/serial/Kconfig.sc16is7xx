@@ -1,0 +1,17 @@
+# Copyright (c) 2024 Semios
+# SPDX-License-Identifier: Apache-2.0
+
+menu "SC16IS7XX UART"
+config UART_SC16IS7XX
+	bool "SC16IS7XX Dual UART"
+	default n
+	select I2C
+	help
+	  Enable driver for SC16IS7XX Dual UART.
+
+# for logging levels
+module = UART_SC16IS7XX
+module-str = sc16is7xx i2c uart
+source "subsys/logging/Kconfig.template.log_config"
+
+endmenu

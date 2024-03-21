@@ -4,6 +4,8 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+#define DT_DRV_COMPAT nxp_sc16is7xx
+
 /**
  * @brief SC16IS7XX Serial Driver
  *
@@ -30,10 +32,9 @@
 
 #include <zephyr/logging/log.h>
 #include <zephyr/drivers/i2c.h>
-#include "sc16is7xx.h"
 #include <zephyr/drivers/gpio.h>
 
-LOG_MODULE_REGISTER(sc16is7xx, CONFIG_SC16IS7XX_LOG_LEVEL);
+LOG_MODULE_REGISTER(sc16is7xx, CONFIG_UART_SC16IS7XX_LOG_LEVEL);
 
 /* register definitions */
 
@@ -190,7 +191,7 @@ static int sc16is7xx_irq_update(const struct device *dev);
 struct sc16is7xx_device_config {
 	struct i2c_dt_spec bus;
 	uint32_t sys_clk_freq;
-#if defined(CONFIG_SC16IS7XX_INTERRUPT_DRIVEN)
+#if defined(CONFIG_UART_INTERRUPT_DRIVEN)
 	struct gpio_dt_spec int_gpio;
 #endif
 	uint8_t reg_interval;
@@ -202,7 +203,7 @@ struct sc16is7xx_dev_data {
 	struct k_spinlock lock;
 	uint8_t fifo_size;
 
-#ifdef CONFIG_SC16IS7XX_INTERRUPT_DRIVEN
+#ifdef CONFIG_UART_INTERRUPT_DRIVEN
 	/* Self-reference to the driver instance */
 	const struct device *instance;
 	struct gpio_callback gpio_callback;
@@ -213,18 +214,17 @@ struct sc16is7xx_dev_data {
 	void *cb_data;                    /**< Callback function arg */
 #endif
 
-#if defined(CONFIG_SC16IS7XX_INTERRUPT_DRIVEN)
+#if defined(CONFIG_UART_INTERRUPT_DRIVEN)
 	bool tx_stream_on;
 #endif
 };
 
-#ifdef CONFIG_SC16IS7XX_INTERRUPT_DRIVEN
+#ifdef CONFIG_UART_INTERRUPT_DRIVEN
 
 static void sc16is7xx_interrupt_worker(struct k_work *work)
 {
 	struct sc16is7xx_dev_data *const drv_data =
 		CONTAINER_OF(work, struct sc16is7xx_dev_data, interrupt_worker);
-	int ret;
 
 	/*
 	 * something happened or we wouldn't be here. lets see what it is.
@@ -314,7 +314,6 @@ static int sc16is7xx_configure(const struct device *dev, const struct uart_confi
 
 	/* temp for return value if error occurs in this locked region */
 	int ret = 0;
-	uint8_t mcr = 0U;
 	uint32_t pclk = 0U;
 
 	k_spinlock_key_t key = k_spin_lock(&dev_data->lock);
@@ -322,7 +321,7 @@ static int sc16is7xx_configure(const struct device *dev, const struct uart_confi
 	ARG_UNUSED(dev_data);
 	ARG_UNUSED(dev_cfg);
 
-#ifdef CONFIG_SC16IS7XX_INTERRUPT_DRIVEN
+#ifdef CONFIG_UART_INTERRUPT_DRIVEN
 	dev_data->iir_cache = 0U;
 #endif
 
@@ -388,16 +387,6 @@ static int sc16is7xx_configure(const struct device *dev, const struct uart_confi
 	/* data bits, stop bits, parity, clear DLAB */
 	OUTBYTE(dev, LCR(dev), uart_cfg.data_bits | uart_cfg.stop_bits | uart_cfg.parity);
 
-	mcr = MCR_RTS_BIT | MCR_DTR_BIT;
-	if (cfg->flow_ctrl == UART_CFG_FLOW_CTRL_RTS_CTS) {
-		// mcr |= MCR_AFCE;
-	}
-	// OUTBYTE(dev,MCR(dev), mcr);
-
-	// OUTBYTE(dev,EFR(dev),EFR_ENABLE_BIT); 			//unlock the enhanced
-	// features register OUTBYTE(dev,MCR(dev),MCR_TCRTLR_BIT); 			//Set the
-	// Modem control register bit 2
-
 	OUTBYTE(dev, FCR(dev), FCR_FIFO | FCR_FIFO_8 | FCR_RCVRCLR | FCR_XMITCLR | FCR_FIFO_64);
 
 	if ((INBYTE(dev, IIR(dev)) & IIR_FE) == IIR_FE) {
@@ -409,7 +398,7 @@ static int sc16is7xx_configure(const struct device *dev, const struct uart_confi
 	/* clear the port */
 	INBYTE(dev, RDR(dev));
 
-#ifdef CONFIG_SC16IS7XX_INTERRUPT_DRIVEN
+#ifdef CONFIG_UART_INTERRUPT_DRIVEN
 	/* enable interrupts   */
 	OUTBYTE(dev, IER(dev),
 		0x00); /* disable interrupts user enables them when the init their driver */
@@ -472,7 +461,7 @@ static int sc16is7xx_init(const struct device *dev)
 		return ret;
 	}
 
-#ifdef CONFIG_SC16IS7XX_INTERRUPT_DRIVEN
+#ifdef CONFIG_UART_INTERRUPT_DRIVEN
 	/* Store self-reference for interrupt handling */
 	data->instance = dev;
 
@@ -572,7 +561,7 @@ static int sc16is7xx_err_check(const struct device *dev)
 	return check >> 1;
 }
 
-#if CONFIG_SC16IS7XX_INTERRUPT_DRIVEN
+#ifdef CONFIG_UART_INTERRUPT_DRIVEN
 
 /**
  * @brief Fill FIFO with data
@@ -632,7 +621,7 @@ static void sc16is7xx_irq_tx_enable(const struct device *dev)
 	struct sc16is7xx_dev_data *data = dev->data;
 	k_spinlock_key_t key = k_spin_lock(&data->lock);
 
-#if defined(CONFIG_SC16IS7XX_INTERRUPT_DRIVEN) && defined(CONFIG_PM)
+#if defined(CONFIG_UART_INTERRUPT_DRIVEN) && defined(CONFIG_PM)
 	struct sc16is7xx_dev_data *const dev_data = dev->data;
 
 	if (!dev_data->tx_stream_on) {
@@ -669,7 +658,7 @@ static void sc16is7xx_irq_tx_disable(const struct device *dev)
 
 	OUTBYTE(dev, IER(dev), INBYTE(dev, IER(dev)) & (~IER_TBE));
 
-#if defined(CONFIG_SC16IS7XX_INTERRUPT_DRIVEN) && defined(CONFIG_PM)
+#if defined(CONFIG_UART_INTERRUPT_DRIVEN) && defined(CONFIG_PM)
 	struct sc16is7xx_dev_data *const dev_data = dev->data;
 
 	if (dev_data->tx_stream_on) {
@@ -704,7 +693,7 @@ static int sc16is7xx_irq_tx_ready(const struct device *dev)
 	struct sc16is7xx_dev_data *data = dev->data;
 	k_spinlock_key_t key = k_spin_lock(&data->lock);
 
-	int ret = ((IIRC(dev) & IIR_ID) == IIR_THRE) ? 1 : 0;
+	int ret = ((IIRC(dev) & IIR_ID) | IIR_THRE) > 0 ? 1 : 0;
 
 	k_spin_unlock(&data->lock, key);
 
@@ -883,10 +872,16 @@ static void sc16is7xx_isr(const struct device *dev)
 		dev_data->cb(dev, dev_data->cb_data);
 	}
 }
+#endif
 
-#endif /* CONFIG_SC16IS7XX_INTERRUPT_DRIVEN */
+static void sc16is7xx_send_break(const struct device *dev, const uint32_t break_ms)
+{
+	OUTBYTE(dev, LCR(dev), INBYTE(dev, LCR(dev)) | LCR_SBRK);
+	k_msleep(break_ms);
+	OUTBYTE(dev, LCR(dev), INBYTE(dev, LCR(dev)) & ~LCR_SBRK);
+}
 
-#ifdef CONFIG_SC16IS7XX_LINE_CTRL
+#ifdef CONFIG_UART_LINE_CTRL
 
 /**
  * @brief Manipulate line control for UART.
@@ -900,12 +895,13 @@ static void sc16is7xx_isr(const struct device *dev)
 static int sc16is7xx_line_ctrl_set(const struct device *dev, uint32_t ctrl, uint32_t val)
 {
 	struct sc16is7xx_dev_data *data = dev->data;
+	const struct sc16is7xx_device_config *const dev_cfg = dev->config;
 	uint32_t mcr, chg;
 	k_spinlock_key_t key;
 
 	switch (ctrl) {
 	case UART_LINE_CTRL_BAUD_RATE:
-		set_baud_rate(dev, val);
+		set_baud_rate(dev, val, dev_cfg->sys_clk_freq);
 		return 0;
 
 	case UART_LINE_CTRL_RTS:
@@ -914,9 +910,9 @@ static int sc16is7xx_line_ctrl_set(const struct device *dev, uint32_t ctrl, uint
 		mcr = INBYTE(dev, MCR(dev));
 
 		if (ctrl == UART_LINE_CTRL_RTS) {
-			chg = MCR_RTS;
+			chg = MCR_RTS_BIT;
 		} else {
-			chg = MCR_DTR;
+			chg = MCR_DTR_BIT;
 		}
 
 		if (val) {
@@ -932,17 +928,18 @@ static int sc16is7xx_line_ctrl_set(const struct device *dev, uint32_t ctrl, uint
 	return -ENOTSUP;
 }
 
-#endif /* CONFIG_SC16IS7XX_LINE_CTRL */
+#endif /* CONFIG_UART_LINE_CTRL */
 
 static const struct uart_driver_api sc16is7xx_driver_api = {
 	.poll_in = sc16is7xx_poll_in,
 	.poll_out = sc16is7xx_poll_out,
+	.send_break = sc16is7xx_send_break,
 	.err_check = sc16is7xx_err_check,
 #ifdef CONFIG_UART_USE_RUNTIME_CONFIGURE
 	.configure = sc16is7xx_configure,
 	.config_get = sc16is7xx_config_get,
 #endif
-#ifdef CONFIG_SC16IS7XX_INTERRUPT_DRIVEN
+#ifdef CONFIG_UART_INTERRUPT_DRIVEN
 
 	.fifo_fill = sc16is7xx_fifo_fill,
 	.fifo_read = sc16is7xx_fifo_read,
@@ -961,7 +958,7 @@ static const struct uart_driver_api sc16is7xx_driver_api = {
 
 #endif
 
-#ifdef CONFIG_SC16IS7XX_LINE_CTRL
+#ifdef CONFIG_UART_LINE_CTRL
 	.line_ctrl_set = sc16is7xx_line_ctrl_set,
 #endif
 
