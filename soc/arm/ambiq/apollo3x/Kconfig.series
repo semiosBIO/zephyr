@@ -13,6 +13,7 @@ config SOC_SERIES_APOLLO3X
 	select SOC_FAMILY_AMBIQ
 	select CPU_HAS_ARM_MPU
 	select HAS_SWO
+	select HAS_PM
 	select AMBIQ_HAL
 	help
 	  Enable support for Apollo3 MCU series

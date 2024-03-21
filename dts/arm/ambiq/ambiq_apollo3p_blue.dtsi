@@ -24,6 +24,24 @@
 		cpu0: cpu@0 {
 			compatible = "arm,cortex-m4f";
 			reg = <0>;
+			cpu-power-states = <&idle &suspend>;
+		};
+	};
+
+	power-states {
+		idle: sleep1 {
+			compatible = "zephyr,power-state";
+			power-state-name = "runtime-idle";
+			substate-id = <1>;
+			min-residency-us = <0>;
+		};
+
+		suspend: deepsleep1 {
+			compatible = "zephyr,power-state";
+			power-state-name = "suspend-to-idle";
+			substate-id = <2>;
+			min-residency-us = <5000000>;
+			exit-latency-us = <25>;
 		};
 	};
 

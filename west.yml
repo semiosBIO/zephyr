@@ -144,7 +144,7 @@ manifest:
       groups:
         - hal
     - name: hal_ambiq
-      revision: 899ea4c72d33330c3a5d5b27bb54aad7377810f7
+      revision: b0f7395673908d4cbd2a796bba5d9198f8ee8d8d
       remote: semios
       repo-path: hal_ambiq.git
       path: modules/hal/ambiq
