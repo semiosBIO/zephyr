@@ -1,10 +1,22 @@
 # Copyright (c) 2023 Ambiq Micro Inc.
 # SPDX-License-Identifier: Apache-2.0
 
-config FLASH_AMBIQ
+config FLASH_AMBIQ_APOLLO4
 	bool "Ambiq flash driver on MRAM"
 	default y
 	depends on DT_HAS_AMBIQ_FLASH_CONTROLLER_ENABLED
+	depends on SOC_SERIES_APOLLO4X
+	select AMBIQ_HAL
+	select FLASH_HAS_PAGE_LAYOUT
+	select FLASH_HAS_DRIVER_ENABLED
+	help
+	  Enables Ambiq flash driver on MRAM.
+
+config FLASH_AMBIQ_APOLLO3
+	bool "Ambiq flash driver"
+	default y
+	depends on DT_HAS_AMBIQ_FLASH_CONTROLLER_ENABLED
+	depends on SOC_SERIES_APOLLO3X
 	select AMBIQ_HAL
 	select FLASH_HAS_PAGE_LAYOUT
 	select FLASH_HAS_DRIVER_ENABLED
