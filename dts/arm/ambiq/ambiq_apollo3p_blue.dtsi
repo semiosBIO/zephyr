@@ -53,9 +53,9 @@
 	};
 
 	/* SRAM */
-	sram0: memory@10010000 {
+	sram0: memory@10011000 {
 		compatible = "mmio-sram";
-		reg = <0x10010000 0xb0000>;
+		reg = <0x10010000 0xB0000>;
 	};
 
 	soc {
@@ -66,10 +66,9 @@
 			#address-cells = <1>;
 			#size-cells = <1>;
 
-			/* MRAM region */
 			flash0: flash@c000 {
 				compatible = "soc-nv-flash";
-				reg = <0x0000C000 0x1f0000>;
+				reg = <0x0000C000 0x1f4000>;
 			};
 		};
 
