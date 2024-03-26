@@ -84,6 +84,10 @@
 	status = "okay";
 };
 
+&counter1 {
+	status = "okay";
+};
+
 &wdt0 {
 	status = "okay";
 };

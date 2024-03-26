@@ -13,3 +13,43 @@ properties:
 
   interrupts:
     required: true
+
+  timer:
+    required: true
+    type: int
+    description: Timer number
+
+  counter_clock:
+    required: true
+    type: int
+    description: Clock source
+    enum:
+      - 0 # AM_HAL_CTIMER_CLK_PIN
+      - 1 # AM_HAL_CTIMER_HFRC_12MHZ
+      - 2 # AM_HAL_CTIMER_HFRC_3MHZ
+      - 3 # AM_HAL_CTIMER_HFRC_187_5KHZ
+      - 4 # AM_HAL_CTIMER_HFRC_47KHZ
+      - 5 # AM_HAL_CTIMER_HFRC_12KHZ
+      - 6 # AM_HAL_CTIMER_XT_32_768KHZ
+      - 7 # AM_HAL_CTIMER_XT_16_384KHZ
+      - 8 # AM_HAL_CTIMER_XT_2_048KHZ
+      - 9 # AM_HAL_CTIMER_XT_256HZ
+      - 10 # AM_HAL_CTIMER_LFRC_512HZ
+      - 11 # AM_HAL_CTIMER_LFRC_32HZ
+      - 12 # AM_HAL_CTIMER_LFRC_1HZ
+      - 13 # AM_HAL_CTIMER_LFRC_1_16HZ
+      - 14 # AM_HAL_CTIMER_RTC_100HZ
+
+  counter_function:
+    required: true
+    type: int
+    description: Counter function pattern
+    enum:
+      - 0 # AM_HAL_CTIMER_FN_ONCE
+      - 1 # AM_HAL_CTIMER_FN_REPEAT
+      - 2 # AM_HAL_CTIMER_FN_PWM_ONCE
+      - 3 # AM_HAL_CTIMER_FN_PWM_REPEAT
+      - 4 # AM_HAL_CTIMER_FN_PTN_ONCE
+      - 5 # AM_HAL_CTIMER_FN_PTN_REPEAT
+      - 6 # AM_HAL_CTIMER_FN_CONTINUOUS
+      - 7 # AM_HAL_CTIMER_FN_PWM_ALTERNATE

@@ -71,6 +71,7 @@ BinaryFiles.txt
 Checkpatch.txt
 DevicetreeBindings.txt
 Gitlint.txt
+GitDiffCheck.txt
 Identity.txt
 ImageSize.txt
 Kconfig.txt
